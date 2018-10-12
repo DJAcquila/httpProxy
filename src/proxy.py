@@ -5,7 +5,7 @@ from util import *
 
 # Configurar o logging
 
-logging.basicConfig(filename = 'proxy.log', filemode='a',format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
+logging.basicConfig(filename = 'proxy.log', filemode='a',format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s', datefmt='%H:%M:%S', level=logging.INFO)
 
 log = logging.getLogger('proxy')
 
@@ -15,18 +15,22 @@ class ServidorProxy():
 		self.port = 54321
 		self.buffer_size = 8192
 		self.conexoes = 10
-		self.cache = Cache(999999999)
-
+		self.cacheSize = 999999999
+		self.cache = Cache(self.cacheSize)
+		self.host = "localhost"
 	def start(self):
 		try:
 			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-			sock.bind(("localhost", self.port))
+			sock.bind((self.host, self.port))
 			sock.listen(self.conexoes)
 		except Exception, e:
 			print "Erro ao iniciar o servidor Proxy"
 			print e
 			return
+		print "|****************************************|"
+		print"|\tHTTP Proxy Server\t\t |\n|\tPort: %d\t\t\t |\n|\tCache Size: %ld\t\t |\n|\tHost: %s\t\t\t |" % (self.port, self.cacheSize, self.host)  
+		print "|****************************************|"
 
 		while True:
 			conn, addr = sock.accept()
